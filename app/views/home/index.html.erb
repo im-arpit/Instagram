@@ -1,0 +1,66 @@
+<div class="posts">
+  <% @posts.each do |post| %>
+    <section class="post">
+      
+  <div class="user">
+  <div class="avatar">
+    <% if post.user.avatar.attached? %>
+      <%= link_to user_path(post.user) do %>
+        <%= image_tag post.user.avatar %>
+      <% end %>
+    <% end %>
+  </div>
+  <%= link_to post.user.username, user_path(post.user), class: 'username' %>
+</div>
+<% if post.image.attached? %>
+  <%= image_tag post.image, class: 'main-image'  %>
+  <div class="description">
+    <% post.description.to_s.split(' ').each do |word| %>
+      <% if word.start_with?('#') %>
+        <%= link_to word, search_path(query: word) %>
+      <% else %>
+        <%= word %>
+      <% end %>
+    <% end %>
+<% if post.comments.exists? %>
+    <% post.comments.each do |comment| %>
+    <h6><strong><%= comment.user.name %>: </strong> <%= comment.description %> </h6>
+   <% end %>
+  <% end %>
+
+
+<%= form_for Comment.new do |f| %>
+
+  <div class="form-group">
+    <br>
+    <%= f.text_field :description, placeholder:' Comment' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.text_field :post_id, value: post.id, class:'d-none'%>
+  </div>
+
+  <div class="form-group">
+    <%= f.text_field :user_id, value: current_user.id, class:'d-none '%>
+  </div>
+
+  <div class="text-center">
+    <%= f.submit 'Comment', class: 'btn btn-primary'%>
+  </div>
+
+<% end %>
+
+  </div>
+
+  <% end %>
+      <!-- post view -->
+    </section>
+  <% end %>
+
+  <%= paginate @posts %>
+  <br>
+  <hr>
+  <br>
+</div>
+
+<%= render partial: "posts/new" %>

@@ -1,0 +1,40 @@
+
+<%= form_with url: search_path, method: :get, local: true, class: 'form-inline search-form' do |form| %>
+  <%= form.text_field :query, value: params[:query], class: 'form-control mr-sm-2', placeholder: '#search' %>
+  <% end %>
+<div class="post-show row">
+  <div class="col-md-8">
+    <%= image_tag @post.image, class: 'image' %>
+    
+  </div>
+  <div class="col-md-4">
+    <div class="user">
+      <div class="avatar">
+        <% if @post.user.avatar.attached? %>
+          <%= link_to user_path(@post.user) do %>
+            <%= image_tag @post.user.avatar %>
+          <% end %>
+        <% end %>
+      </div>
+      <%= link_to @post.user.username, user_path(@post.user), class: 'username' %>
+    </div>
+    <div class="description">
+      <% @post.description.to_s.split(' ').each do |word| %>
+  <% if word.start_with?('#') %>
+    <%= link_to word, search_path(query: word) %>
+  <%else %>
+    <%= word %>
+  <%end %>
+<% end %>
+    </div>
+    <div class="delete">
+  <% if current_user.posts.exists?(@post.id) %>
+    <%= link_to 'Delete Post', post_path(@post), method: :delete, data: { confirm: 'Are you sure?' } %>
+    <% @post.comments.each do |comment|%>
+    <h6><strong><%= current_user.name %>: </strong> <%= comment.description %> </h6>
+   <% end %>
+  <% end %>
+  <%= render partial: "comments/comment" ,post: @post%>
+</div>
+  </div>
+</div>
